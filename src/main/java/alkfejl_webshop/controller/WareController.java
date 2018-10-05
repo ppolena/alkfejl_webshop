@@ -75,8 +75,8 @@ public class WareController {
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByPriceLessThan(price));
     }
 
-    @GetMapping("/by-price-greater-than/{lowerLimit}&{upperLimit}")
-    public ResponseEntity<List<Ware>> getWaresByPriceBetweem(@PathVariable double lowerLimit, @PathVariable double upperLimit) {
+    @GetMapping("/by-price-between/{lowerLimit}&{upperLimit}")
+    public ResponseEntity<List<Ware>> getWaresByPriceBetween(@PathVariable double lowerLimit, @PathVariable double upperLimit) {
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByPriceBetween(lowerLimit, upperLimit));
     }
 
@@ -95,8 +95,8 @@ public class WareController {
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByStockLessThan(number));
     }
 
-    @GetMapping("/by-stock-greater-than/{lowerLimit}&{upperLimit}")
-    public ResponseEntity<List<Ware>> getWaresByStockBetweem(@PathVariable long lowerLimit, @PathVariable long upperLimit) {
+    @GetMapping("/by-stock-between/{lowerLimit}&{upperLimit}")
+    public ResponseEntity<List<Ware>> getWaresByStockBetween(@PathVariable long lowerLimit, @PathVariable long upperLimit) {
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByStockBetween(lowerLimit, upperLimit));
     }
 
@@ -137,7 +137,7 @@ public class WareController {
                 storedWare.get().setPrice(Double.parseDouble(updatedWare.get("price")));
             }
             if (NumberUtils.isParsable(updatedWare.get("stock")) && Double.parseDouble(updatedWare.get("stock")) > 0.0) {
-                storedWare.get().setStock(Long.valueOf((long) Math.round(Double.parseDouble(updatedWare.get("stock")))));
+                storedWare.get().setStock(Math.round(Double.parseDouble(updatedWare.get("stock"))));
             }
             if (updatedWare.get("description") != null) {
                 storedWare.get().setDescription(updatedWare.get("description"));
