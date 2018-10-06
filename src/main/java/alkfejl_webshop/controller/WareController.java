@@ -1,31 +1,28 @@
 package alkfejl_webshop.controller;
 
+import alkfejl_webshop.entity.Order;
+import alkfejl_webshop.entity.OrderStatus;
 import alkfejl_webshop.entity.Ware;
+import alkfejl_webshop.repository.OrderRepository;
 import alkfejl_webshop.repository.WareRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/wares")
 public class WareController {
 
     private final WareRepository wareRepository;
+    private final OrderRepository orderRepository;
 
     @GetMapping("")
     public ResponseEntity<List<Ware>> getAllWares() {
@@ -33,7 +30,7 @@ public class WareController {
     }
 
     @GetMapping("/by-id/{id}")
-    public ResponseEntity<Ware> getWareById(@PathVariable Integer id) {
+    public ResponseEntity<Ware> getWareById(@PathVariable Long id){
         Optional<Ware> ware = wareRepository.findById(id);
         if (ware.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(ware.get());
@@ -110,7 +107,7 @@ public class WareController {
     }
 
     @PutMapping("/by-id/{id}")
-    public ResponseEntity<String> changeWare(@PathVariable Integer id, @Valid @RequestBody Ware updatedWare) {
+    public ResponseEntity<String> changeWare(@PathVariable Long id, @Valid @RequestBody Ware updatedWare){
         Optional<Ware> storedWare = wareRepository.findById(id);
         if (storedWare.isPresent()) {
             updatedWare.setId(storedWare.get().getId());
@@ -121,11 +118,11 @@ public class WareController {
     }
 
     @PatchMapping("/by-id/{id}")
-    public ResponseEntity<String> updateWare(@PathVariable Integer id, @RequestBody Map<String, String> updatedWare) {
+    public ResponseEntity<String> updateWare(@PathVariable Long id, @RequestBody Map<String, String> updatedWare){
         Optional<Ware> storedWare = wareRepository.findById(id);
         if (storedWare.isPresent()) {
             if (updatedWare.get("name") != null) {
-                storedWare.get().setName(updatedWare.get("name").toString());
+                storedWare.get().setName(updatedWare.get("name"));
             }
             if (updatedWare.get("type") != null) {
                 storedWare.get().setType(updatedWare.get("type"));
@@ -136,13 +133,28 @@ public class WareController {
             if (NumberUtils.isParsable(updatedWare.get("price")) && Double.parseDouble(updatedWare.get("price")) > 0.0) {
                 storedWare.get().setPrice(Double.parseDouble(updatedWare.get("price")));
             }
-            if (NumberUtils.isParsable(updatedWare.get("stock")) && Double.parseDouble(updatedWare.get("stock")) > 0.0) {
+            if(NumberUtils.isParsable(updatedWare.get("stock")) && Double.parseDouble(updatedWare.get("stock")) > storedWare.get().getStock()){
                 storedWare.get().setStock(Math.round(Double.parseDouble(updatedWare.get("stock"))));
             }
             if (updatedWare.get("description") != null) {
                 storedWare.get().setDescription(updatedWare.get("description"));
             }
             wareRepository.save(storedWare.get());
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @DeleteMapping("/by-id/{id}")
+    public ResponseEntity<String> deleteWare(@PathVariable Long id){
+        Optional<Ware> storedWare = wareRepository.findById(id);
+        if(storedWare.isPresent()){
+            for(Order order : orderRepository.findByStatus(OrderStatus.PENDING)){
+                if(order.getItems().contains(storedWare.get())){
+                    order.getItems().remove(storedWare.get());
+                }
+            }
+            wareRepository.delete(storedWare.get());
             return ResponseEntity.status(HttpStatus.OK).build();
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

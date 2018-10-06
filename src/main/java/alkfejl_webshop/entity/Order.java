@@ -1,35 +1,41 @@
 package alkfejl_webshop.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.Positive;
-import java.util.Date;
+import javax.persistence.*;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
+import static javax.persistence.CascadeType.ALL;
 
 @Data
+@Entity
 @Table(name = "orders")
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true, of = {"user", "ware", "amount", "orderDate"})
+@EqualsAndHashCode(callSuper = true, of = {"customer", "orderDate"})
+@ToString(callSuper = true, of = {"customer", "orderDate"})
 public class Order extends BaseEntity {
 
-    @ManyToOne
-    @Column(nullable = false, updatable = false)
-    private User user;
+    @ManyToOne(optional = false)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    private User customer;
 
-    @ManyToOne
-    @Column(nullable = false, updatable = false)
-    private Ware ware;
+    @OneToMany(cascade = ALL, orphanRemoval = true)
+    @JoinColumn(name = "order_id")
+    private List<Item> items = new ArrayList<>();
 
-    @Positive
+    @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private long amount;
+    private OrderStatus status;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(nullable = false)
-    private Date orderDate;
+    private Instant orderDate;
 }

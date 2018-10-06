@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface WareRepository extends JpaRepository<Ware, Integer> {
+public interface WareRepository extends JpaRepository<Ware, Long>{
     Optional<Ware> findByName(String name);
 
     List<Ware> findByType(String type);

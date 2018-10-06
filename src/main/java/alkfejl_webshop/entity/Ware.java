@@ -8,12 +8,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
 @Data
 @Entity
 @Table(name = "wares")
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, of = {"name", "type", "manufacturer", "price", "stock", "description"})
 @ToString(callSuper = true, of = {"name", "type", "manufacturer", "price", "stock", "description"})
 public class Ware extends BaseEntity {
 
@@ -33,7 +34,7 @@ public class Ware extends BaseEntity {
     @Column(nullable = false)
     private double price;
 
-    @Positive
+    @PositiveOrZero
     @Column(nullable = false)
     private long stock;
 

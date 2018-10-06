@@ -1,27 +1,18 @@
 package alkfejl_webshop.controller;
 
-import alkfejl_webshop.entity.Order;
-import alkfejl_webshop.entity.User;
-import alkfejl_webshop.entity.Ware;
+import alkfejl_webshop.entity.*;
 import alkfejl_webshop.repository.OrderRepository;
 import alkfejl_webshop.repository.UserRepository;
 import alkfejl_webshop.repository.WareRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Optional;
+import java.time.Instant;
+import java.util.*;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/orders")
 public class OrderController {
@@ -36,7 +27,7 @@ public class OrderController {
     }
 
     @GetMapping("/by-id/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Integer id) {
+    public ResponseEntity<Order> getOrderById(@PathVariable Long id){
         Optional<Order> order = orderRepository.findById(id);
         if (order.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(order.get());
@@ -45,81 +36,192 @@ public class OrderController {
     }
 
     @GetMapping("/by-user/{id}")
-    public ResponseEntity<List<Order>> getByUser(@PathVariable Integer id) {
+    public ResponseEntity<List<Order>> getOrderByCustomer(@PathVariable Long id){
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByUser(user.get()));
+            return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByCustomer(user.get()));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @GetMapping("/by-ware/{id}")
-    public ResponseEntity<List<Order>> getByWare(@PathVariable Integer id) {
-        Optional<Ware> ware = wareRepository.findById(id);
-        if (ware.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByWare(ware.get()));
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    @GetMapping("/by-status/{status}")
+    public ResponseEntity<List<Order>> getOrderByStatus(@PathVariable OrderStatus status){
+        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByStatus(status));
     }
 
-    @GetMapping("/by-user-and-ware/{userId}&{wareId}")
-    public ResponseEntity<Optional<Order>> getByUserAndWare(@PathVariable Integer userId, @PathVariable Integer wareId) {
-        Optional<User> user = userRepository.findById(userId);
-        Optional<Ware> ware = wareRepository.findById(wareId);
-        if (user.isPresent() && ware.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByUserAndWare(user.get(), ware.get()));
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    @GetMapping("/by-order-date-greater-than/{instant}")
+    public ResponseEntity<List<Order>> getByOrderDateGreaterThan(@PathVariable Instant instant){
+        //Instant instant = Instant.parse(dateString);
+        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByOrderDateGreaterThan(instant));
     }
 
-    @GetMapping("/by-amount/{amount}")
-    public ResponseEntity<List<Order>> getByAmount(@PathVariable long amount) {
-        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByAmount(amount));
+    @GetMapping("/by-order-date-less-than/{instant}")
+    public ResponseEntity<List<Order>> getByORderDateLessThan(@PathVariable Instant instant){
+        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByOrderDateLessThan(instant));
     }
 
-    @GetMapping("/by-amount-greater-than/{amount}")
-    public ResponseEntity<List<Order>> getByAmountGreaterThan(long amount) {
-        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByAmountGreaterThan(amount));
+    @GetMapping("/by-order-date-between/{earlierInstant}&{laterInstant}")
+    public ResponseEntity<List<Order>> getByOrderDateBetween(@PathVariable Instant earlierInstant, @PathVariable Instant laterInstant){
+        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByOrderDateBetween(earlierInstant, laterInstant));
     }
 
-    @GetMapping("/by-amount-less-than/{amount}")
-    public ResponseEntity<List<Order>> getByAmountLessThan(long amount) {
-        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByAmountLessThan(amount));
-    }
-
-    @GetMapping("/by-amount-between/{lowerLimit}&{upperLimit}")
-    public ResponseEntity<List<Order>> getByAmountBetween(long lowerLimit, long upperLimit) {
-        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByAmountBetween(lowerLimit, upperLimit));
-    }
-
-    /*public ResponseEntity<List<Order>> getByOrderDateGreaterThan(@PathVariable String dateString){
-        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByOrderDateGreaterThan(date));
-    }
-
-    public ResponseEntity<List<Order>> getByORderDateLessThan(@PathVariable String dateString){
-        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByORderDateLessThan(date));
-    }
-
-    public ResponseEntity<List<Order>> getByOrderDateBetween(@PathVariable String earlierDateString, @PathVariable String laterDateString){
-        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByOrderDateBetween(earlierDate, laterDate));
-    }*/
-
-    @PostMapping
-    public ResponseEntity<String> addOrder(@Valid @RequestBody Order order) {
-        if (orderRepository.findByUserAndWare(order.getUser(), order.getWare()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-        orderRepository.save(order);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @PutMapping("/by-id/{id}")
-    public ResponseEntity<String> changeOrder(@PathVariable Integer id, @Valid @RequestBody Order updatedOrder) {
-        Optional<Order> storedOrder = orderRepository.findById(id);
-        if (storedOrder.isPresent()) {
-            updatedOrder.setId(storedOrder.get().getId());
-            orderRepository.save(updatedOrder);
+    @PostMapping("/by-user/{id}/new-order")
+    public ResponseEntity<String> addOrder(@PathVariable Long id){
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()){
+            Order order = new Order();
+            order.setCustomer(user.get());
+            order.setStatus(OrderStatus.PENDING);
+            orderRepository.save(order);
             return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @PutMapping("/by-id/{id}/new-items")
+    public ResponseEntity<String> addItemsToOrder(@PathVariable Long id, @RequestBody Map<String, ArrayList<Map<String, Long>>> items){
+        Optional<Order> storedOrder = orderRepository.findById(id);
+        if(storedOrder.isPresent()){
+            if(storedOrder.get().getStatus().equals(OrderStatus.PENDING)){
+                if(items.get("items") != null){
+                    for(Map<String, Long> item : items.get("items")){
+                        if(item.get("ware") != null && item.get("amount") != null){
+                            Optional<Ware> ware = wareRepository.findById(item.get("ware"));
+                            if(ware.isPresent() && ware.get().getStock() >= item.get("amount")){
+                                ware.get().setStock(ware.get().getStock() - item.get("amount"));
+                                wareRepository.save(ware.get());
+                                Item newItem = new Item();
+                                newItem.setWare(ware.get());
+                                newItem.setAmount(item.get("amount"));
+                                storedOrder.get().getItems().add(newItem);
+                            }
+                            else{
+                                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                            }
+                        }
+                        else{
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                        }
+                    }
+                    orderRepository.save(storedOrder.get());
+                    return ResponseEntity.status(HttpStatus.CREATED).build();
+                }
+                else{
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                }
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @PatchMapping("/by-id/{id}/new-item/{wareId}&{amount}")
+    public ResponseEntity<String> addItemToOrder(@PathVariable Long id, @PathVariable Long wareId, @PathVariable long amount){
+        Optional<Order> storedOrder = orderRepository.findById(id);
+        if(storedOrder.isPresent()){
+            if(storedOrder.get().getStatus().equals(OrderStatus.PENDING)){
+                Optional<Ware> ware = wareRepository.findById(wareId);
+                if(ware.isPresent() && ware.get().getStock() >= amount){
+                    ware.get().setStock(ware.get().getStock() - amount);
+                    wareRepository.save(ware.get());
+                    Item item = new Item();
+                    item.setWare(ware.get());
+                    item.setAmount(amount);
+                    storedOrder.get().getItems().add(item);
+                    orderRepository.save(storedOrder.get());
+                    return ResponseEntity.status(HttpStatus.CREATED).build();
+                }
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @PatchMapping("/by-id/{id}/change-status/{status}")
+    public ResponseEntity<String> changeOrderStatus(@PathVariable Long id, @PathVariable OrderStatus status){
+        Optional<Order> storedOrder = orderRepository.findById(id);
+        if(storedOrder.isPresent()){
+            if(!storedOrder.get().getItems().isEmpty()){
+                storedOrder.get().setStatus(status);
+                orderRepository.save(storedOrder.get());
+                return ResponseEntity.status(HttpStatus.OK).build();
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @DeleteMapping("by-id/{id}")
+    public ResponseEntity<String> deleteOrder(@PathVariable Long id){
+        Optional<Order> storedOrder = orderRepository.findById(id);
+        if(storedOrder.isPresent()){
+            if(storedOrder.get().getStatus().equals(OrderStatus.PENDING)){
+                for(Iterator<Item> it = storedOrder.get().getItems().iterator(); it.hasNext(); ){
+                    Item item = it.next();
+                    Ware ware = wareRepository.findById(item.getWare().getId()).get();
+                    ware.setStock(ware.getStock() + item.getAmount());
+                }
+                orderRepository.delete(storedOrder.get());
+                return ResponseEntity.status(HttpStatus.OK).build();
+            }
+            else if(storedOrder.get().getStatus().equals(OrderStatus.FINISHED)){
+                orderRepository.delete(storedOrder.get());
+                return ResponseEntity.status(HttpStatus.OK).build();
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @DeleteMapping("by-id/{id}/delete-items")
+    public ResponseEntity<String> deleteItemsFromOrder(@PathVariable Long id){
+        Optional<Order> storedOrder = orderRepository.findById(id);
+        if(storedOrder.isPresent()){
+            if(storedOrder.get().getStatus().equals(OrderStatus.PENDING)){
+                for(Iterator<Item> it = storedOrder.get().getItems().iterator(); it.hasNext(); ){
+                    Item item = it.next();
+                    Ware ware = wareRepository.findById(item.getWare().getId()).get();
+                    ware.setStock(ware.getStock() + item.getAmount());
+                }
+                storedOrder.get().getItems().clear();
+                orderRepository.save(storedOrder.get());
+                return ResponseEntity.status(HttpStatus.OK).build();
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @DeleteMapping("by-id/{id}/delete-item/{itemId}")
+    public ResponseEntity<String> deleteItemFromOrder(@PathVariable Long id, @PathVariable Long itemId){
+        Optional<Order> storedOrder = orderRepository.findById(id);
+        if(storedOrder.isPresent()){
+            if(storedOrder.get().getStatus().equals(OrderStatus.PENDING)){
+                for(Iterator<Item> it = storedOrder.get().getItems().iterator(); it.hasNext(); ){
+                    Item item = it.next();
+                    if(item.getId().longValue() == itemId.longValue()){
+                        Ware ware = wareRepository.findById(item.getWare().getId()).get();
+                        ware.setStock(ware.getStock() + item.getAmount());
+                        it.remove();
+                    }
+                }
+                orderRepository.save(storedOrder.get());
+                return ResponseEntity.status(HttpStatus.OK).build();
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }

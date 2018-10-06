@@ -1,32 +1,23 @@
 package alkfejl_webshop.repository;
 
 import alkfejl_webshop.entity.Order;
+import alkfejl_webshop.entity.OrderStatus;
 import alkfejl_webshop.entity.User;
-import alkfejl_webshop.entity.Ware;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
-public interface OrderRepository extends JpaRepository<Order, Integer> {
-    List<Order> findByUser(User user);
+@Repository
+public interface OrderRepository extends JpaRepository<Order, Long>{
+    List<Order> findByCustomer(User customer);
 
-    List<Order> findByWare(Ware ware);
+    List<Order> findByStatus(OrderStatus status);
 
-    Optional<Order> findByUserAndWare(User user, Ware ware);
+    List<Order> findByOrderDateGreaterThan(Instant instant);
 
-    List<Order> findByAmount(long amuount);
+    List<Order> findByOrderDateLessThan(Instant instant);
 
-    List<Order> findByAmountGreaterThan(long amount);
-
-    List<Order> findByAmountLessThan(long amount);
-
-    List<Order> findByAmountBetween(long lowerLimit, long upperLimit);
-
-    List<Order> findByOrderDateGreaterThan(Date date);
-
-    List<Order> findByORderDateLessThan(Date date);
-
-    List<Order> findByOrderDateBetween(Date earlierDate, Date laterDate);
+    List<Order> findByOrderDateBetween(Instant earlierInstant, Instant laterInstant);
 }
