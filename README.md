@@ -8,10 +8,10 @@ Az adminisztrátor új árukat adhat hozzá a raktárkészlethet vagy módosíth
 
 
 ### 4 tábla:
-- felhasználók	(ID, név, email, jelszó, cím, telefon, jogosultság)
-- árukészlet	(ID, típus, gyártó, ár, raktárkészlet, leírás)
-- megrendelések	(felhasználóID, áruID, darabszám, dátum)
-- kosár		(felhasználóID, áruID, darabszám)
+- USERS(ID, ACCESS_RIGHT, ADDRESS, EMAIL, FIRST_NAME, LAST_NAME, PASSWORD, PHONE_NUMBER)
+- WARES(ID, DESCRIPTION, MANUFACTURER, NAME, PRICE, STOCK, TYPE)
+- ORDERS(ID, ORDER_DATE, STATUS, CUSTOMER_ID)
+- ORDER_ITEMS(ID, AMOUNT, WARE_ID, ORDER_ID)
 
 
 ### Funkcionális követelmények:
