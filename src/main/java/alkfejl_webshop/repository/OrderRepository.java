@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Long>{
+public interface OrderRepository extends JpaRepository<Order, UUID>{
     List<Order> findByCustomer(User customer);
 
     List<Order> findByStatus(OrderStatus status);

@@ -6,9 +6,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EnableSwagger2
 @SpringBootApplication
-public class AlkfejlWebshopApplication {
+public class AlkfejlWebshopApplication{
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         SpringApplication.run(AlkfejlWebshopApplication.class, args);
     }
 }

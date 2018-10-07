@@ -5,8 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface WareRepository extends JpaRepository<Ware, Long>{
+public interface WareRepository extends JpaRepository<Ware, UUID>{
     Optional<Ware> findByName(String name);
 
     List<Ware> findByType(String type);

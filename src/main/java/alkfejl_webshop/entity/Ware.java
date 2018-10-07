@@ -16,7 +16,7 @@ import javax.validation.constraints.Size;
 @Table(name = "wares")
 @EqualsAndHashCode(callSuper = true, of = {"name", "type", "manufacturer", "price", "stock", "description"})
 @ToString(callSuper = true, of = {"name", "type", "manufacturer", "price", "stock", "description"})
-public class Ware extends BaseEntity {
+public class Ware extends BaseEntity{
 
     @Size(max = 25)
     @Column(nullable = false, unique = true, length = 25)

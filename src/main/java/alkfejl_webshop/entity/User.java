@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "users")
 @EqualsAndHashCode(callSuper = true, of = {"firstName", "lastName", "email", "phoneNumber", "address", "accessRight"})
 @ToString(callSuper = true, of = {"firstName", "lastName", "email", "phoneNumber", "address", "accessRight"})
-public class User extends BaseEntity {
+public class User extends BaseEntity{
 
     @Size(min = 2, max = 25)
     @Column(nullable = false, length = 25)

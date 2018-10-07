@@ -20,7 +20,7 @@ import static javax.persistence.CascadeType.ALL;
 @Table(name = "orders")
 @EqualsAndHashCode(callSuper = true, of = {"customer", "orderDate"})
 @ToString(callSuper = true, of = {"customer", "orderDate"})
-public class Order extends BaseEntity {
+public class Order extends BaseEntity{
 
     @ManyToOne(optional = false)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
