@@ -1,5 +1,6 @@
 package alkfejl_webshop.controller;
 
+import alkfejl_webshop.entity.AccessRight;
 import alkfejl_webshop.entity.User;
 import alkfejl_webshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -85,6 +86,7 @@ public class UserController{
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setAccessRight(AccessRight.ROLE_CUSTOMER);
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
