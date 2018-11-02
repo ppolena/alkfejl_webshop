@@ -49,3 +49,4 @@ Az adminisztrátor új árukat adhat hozzá a raktárkészlethet vagy módosíth
 ### Szerepkörök:
 - Adminisztrátor
 - Vásárló
+- Vendég
