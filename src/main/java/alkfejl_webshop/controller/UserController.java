@@ -97,6 +97,7 @@ public class UserController{
         Optional<User> storedUser = userRepository.findById(id);
         if(storedUser.isPresent()){
             updatedUser.setId(storedUser.get().getId());
+            updatedUser.setAccessRight(storedUser.get().getAccessRight());
             userRepository.save(updatedUser);
             return ResponseEntity.status(HttpStatus.OK).build();
         }
