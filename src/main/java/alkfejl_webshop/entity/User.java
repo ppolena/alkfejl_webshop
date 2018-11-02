@@ -1,5 +1,7 @@
 package alkfejl_webshop.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -48,4 +50,14 @@ public class User extends BaseEntity{
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
+
+    @JsonIgnore
+    public String getPassword(){
+        return password;
+    }
+
+    @JsonProperty
+    public void setPassword(String password){
+        this.password = password;
+    }
 }

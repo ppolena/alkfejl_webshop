@@ -1,5 +1,12 @@
 package alkfejl_webshop.entity;
 
-public enum AccessRight{
-    ADMIN, CUSTOMER, GUEST
+import org.springframework.security.core.GrantedAuthority;
+
+public enum AccessRight implements GrantedAuthority{
+    ROLE_ADMIN, ROLE_CUSTOMER, ROLE_GUEST;
+
+    @Override
+    public String getAuthority(){
+        return this.toString();
+    }
 }

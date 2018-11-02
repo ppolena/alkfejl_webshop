@@ -5,6 +5,7 @@ import alkfejl_webshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +22,13 @@ public class UserController{
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers(){
         return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll());
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/by-id/{id}")
     public ResponseEntity<User> getUserById(@PathVariable UUID id){
         Optional<User> user = userRepository.findById(id);
@@ -35,6 +38,7 @@ public class UserController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/by-email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable String email){
         Optional<User> user = userRepository.findByEmail(email);
@@ -44,31 +48,37 @@ public class UserController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/by-first-name/{firstName}")
     public ResponseEntity<List<User>> getAllUsersByFirstName(@PathVariable String firstName){
         return ResponseEntity.status(HttpStatus.OK).body(userRepository.findByFirstNameIgnoreCase(firstName));
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/by-last-name/{lastName}")
     public ResponseEntity<List<User>> getAllUsersByLastName(@PathVariable String lastName){
         return ResponseEntity.status(HttpStatus.OK).body(userRepository.findByLastNameIgnoreCase(lastName));
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/by-first-and-last-name/{firstName}&{lastName}")
     public ResponseEntity<List<User>> getAllUsersByFirstNameAndLastName(@PathVariable String firstName, @PathVariable String lastName){
         return ResponseEntity.status(HttpStatus.OK).body(userRepository.findByFirstNameAndLastNameAllIgnoreCase(firstName, lastName));
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/phone-number-given")
     public ResponseEntity<List<User>> getAllUsersByPhoneNumberNotNull(){
         return ResponseEntity.status(HttpStatus.OK).body(userRepository.findByPhoneNumberNotNull());
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/address-given")
     public ResponseEntity<List<User>> getAllUsersByAddressNotNull(){
         return ResponseEntity.status(HttpStatus.OK).body(userRepository.findByAddressNotNull());
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_GUEST"})
     @PostMapping
     public ResponseEntity<String> addUser(@Valid @RequestBody User user){
         if(userRepository.findByEmail(user.getEmail()).isPresent()){
@@ -79,6 +89,7 @@ public class UserController{
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @PutMapping("/by-id/{id}")
     public ResponseEntity<String> changeUser(@PathVariable UUID id, @Valid @RequestBody User updatedUser){
         Optional<User> storedUser = userRepository.findById(id);
@@ -90,6 +101,7 @@ public class UserController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @PatchMapping("/by-id/{id}")
     public ResponseEntity<String> updateUser(@PathVariable UUID id, @Valid @RequestBody User updatedUser){
         Optional<User> storedUser = userRepository.findById(id);
@@ -115,6 +127,7 @@ public class UserController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @DeleteMapping("/by-id/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id){
         Optional<User> storedUser = userRepository.findById(id);

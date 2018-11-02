@@ -7,6 +7,7 @@ import alkfejl_webshop.repository.WareRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -21,11 +22,13 @@ public class OrderController{
     private final UserRepository userRepository;
     private final WareRepository wareRepository;
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders(){
         return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findAll());
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/by-id/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable UUID id){
         Optional<Order> order = orderRepository.findById(id);
@@ -35,6 +38,7 @@ public class OrderController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/by-customer/{id}")
     public ResponseEntity<List<Order>> getAllOrdersByCustomer(@PathVariable UUID id){
         Optional<User> customer = userRepository.findById(id);
@@ -44,27 +48,32 @@ public class OrderController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/by-status/{status}")
     public ResponseEntity<List<Order>> getAllOrdersByStatus(@PathVariable OrderStatus status){
         return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByStatus(status));
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/by-order-date-greater-than/{instant}")
     public ResponseEntity<List<Order>> getAllOrdersByOrderDateGreaterThan(@PathVariable Instant instant){
         //Instant instant = Instant.parse(dateString);
         return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByOrderDateGreaterThan(instant));
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/by-order-date-less-than/{instant}")
     public ResponseEntity<List<Order>> getAllOrdersByORderDateLessThan(@PathVariable Instant instant){
         return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByOrderDateLessThan(instant));
     }
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/by-order-date-between/{earlierInstant}&{laterInstant}")
     public ResponseEntity<List<Order>> getAllOrdersByOrderDateBetween(@PathVariable Instant earlierInstant, @PathVariable Instant laterInstant){
         return ResponseEntity.status(HttpStatus.OK).body(orderRepository.findByOrderDateBetween(earlierInstant, laterInstant));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @PostMapping("/by-customer/{id}/new-order")
     public ResponseEntity<String> addOrder(@PathVariable UUID id){
         Optional<User> customer = userRepository.findById(id);
@@ -78,6 +87,7 @@ public class OrderController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @PutMapping("/by-id/{id}/new-items")
     public ResponseEntity<String> addItemsToOrder(@PathVariable UUID id, @RequestBody Map<String, ArrayList<Map<String, String>>> items){
         Optional<Order> storedOrder = orderRepository.findById(id);
@@ -117,6 +127,7 @@ public class OrderController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @PatchMapping("/by-id/{id}/new-item/{wareId}&{amount}")
     public ResponseEntity<String> addItemToOrder(@PathVariable UUID id, @PathVariable UUID wareId, @PathVariable long amount){
         Optional<Order> storedOrder = orderRepository.findById(id);
@@ -142,6 +153,7 @@ public class OrderController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @PatchMapping("/by-id/{id}/change-status/{status}")
     public ResponseEntity<String> changeOrderStatus(@PathVariable UUID id, @PathVariable OrderStatus status){
         Optional<Order> storedOrder = orderRepository.findById(id);
@@ -158,6 +170,7 @@ public class OrderController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @DeleteMapping("by-id/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable UUID id){
         Optional<Order> storedOrder = orderRepository.findById(id);
@@ -182,6 +195,7 @@ public class OrderController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @DeleteMapping("by-id/{id}/delete-items")
     public ResponseEntity<String> deleteItemsFromOrder(@PathVariable UUID id){
         Optional<Order> storedOrder = orderRepository.findById(id);
@@ -203,6 +217,7 @@ public class OrderController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @DeleteMapping("by-id/{id}/delete-item/{itemId}")
     public ResponseEntity<String> deleteItemFromOrder(@PathVariable UUID id, @PathVariable UUID itemId){
         Optional<Order> storedOrder = orderRepository.findById(id);

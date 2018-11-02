@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,11 +23,13 @@ public class WareController{
     private final WareRepository wareRepository;
     private final OrderRepository orderRepository;
 
-    @GetMapping("")
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
+    @GetMapping
     public ResponseEntity<List<Ware>> getAllWares(){
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findAll());
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-id/{id}")
     public ResponseEntity<Ware> getWareById(@PathVariable UUID id){
         Optional<Ware> ware = wareRepository.findById(id);
@@ -36,6 +39,7 @@ public class WareController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-name/{name}")
     public ResponseEntity<Ware> getWareByName(@PathVariable String name){
         Optional<Ware> ware = wareRepository.findByName(name);
@@ -45,56 +49,67 @@ public class WareController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-type/{type}")
     public ResponseEntity<List<Ware>> getAllWaresByType(@PathVariable String type){
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByType(type));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-manufacturer/{manufacturer}")
     public ResponseEntity<List<Ware>> getAllWaresByManufacturer(@PathVariable String manufacturer){
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByManufacturer(manufacturer));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-price/{price}")
     public ResponseEntity<List<Ware>> getAllWaresByPrice(@PathVariable double price){
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByPrice(price));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-price-greater-than/{price}")
     public ResponseEntity<List<Ware>> getAllWaresByPriceGreaterThan(@PathVariable double price){
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByPriceGreaterThan(price));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-price-less-than/{price}")
     public ResponseEntity<List<Ware>> getAllWaresByPriceLessThan(@PathVariable double price){
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByPriceLessThan(price));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-price-between/{lowerLimit}&{upperLimit}")
     public ResponseEntity<List<Ware>> getAllWaresByPriceBetween(@PathVariable double lowerLimit, @PathVariable double upperLimit){
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByPriceBetween(lowerLimit, upperLimit));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-stock/{number}")
     public ResponseEntity<List<Ware>> getAllWaresByStock(@PathVariable long number){
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByStock(number));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-stock-greater-than/{number}")
     public ResponseEntity<List<Ware>> getAllWaresByStockGreaterThan(@PathVariable long number){
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByStockGreaterThan(number));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-stock-less-than/{number}")
     public ResponseEntity<List<Ware>> getAllWaresByStockLessThan(@PathVariable long number){
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByStockLessThan(number));
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_GUEST"})
     @GetMapping("/by-stock-between/{lowerLimit}&{upperLimit}")
     public ResponseEntity<List<Ware>> getAllWaresByStockBetween(@PathVariable long lowerLimit, @PathVariable long upperLimit){
         return ResponseEntity.status(HttpStatus.OK).body(wareRepository.findByStockBetween(lowerLimit, upperLimit));
     }
 
+    @Secured({"ROLE_ADMIN"})
     @PostMapping
     public ResponseEntity<String> addWare(@Valid @RequestBody Ware ware){
         if(wareRepository.findByName(ware.getName()).isPresent()){
@@ -104,6 +119,7 @@ public class WareController{
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @PostMapping("/add-wares")
     public ResponseEntity<String> addWares(@RequestBody Map<String, ArrayList<Map<String, String>>> wares){
         if(wares.get("wares") != null){
@@ -136,6 +152,7 @@ public class WareController{
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @PutMapping("/by-id/{id}")
     public ResponseEntity<String> changeWare(@PathVariable UUID id, @Valid @RequestBody Ware updatedWare){
         Optional<Ware> storedWare = wareRepository.findById(id);
@@ -147,6 +164,7 @@ public class WareController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @PatchMapping("/by-id/{id}")
     public ResponseEntity<String> updateWare(@PathVariable UUID id, @RequestBody Map<String, String> updatedWare){
         Optional<Ware> storedWare = wareRepository.findById(id);
@@ -175,6 +193,7 @@ public class WareController{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @DeleteMapping("/by-id/{id}")
     public ResponseEntity<String> deleteWare(@PathVariable UUID id){
         Optional<Ware> storedWare = wareRepository.findById(id);
