@@ -75,21 +75,20 @@ public class OrderController{
 
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @PostMapping("/by-customer/{id}/new-order")
-    public ResponseEntity<String> addOrder(@PathVariable UUID id){
+    public ResponseEntity<Order> addOrder(@PathVariable UUID id){
         Optional<User> customer = userRepository.findById(id);
         if(customer.isPresent()){
             Order order = new Order();
             order.setCustomer(customer.get());
             order.setStatus(OrderStatus.PENDING);
-            orderRepository.save(order);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(orderRepository.save(order));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @PutMapping("/by-id/{id}/new-items")
-    public ResponseEntity<String> addItemsToOrder(@PathVariable UUID id, @RequestBody Map<String, ArrayList<Map<String, String>>> items){
+    public ResponseEntity<Order> addItemsToOrder(@PathVariable UUID id, @RequestBody Map<String, ArrayList<Map<String, String>>> items){
         Optional<Order> storedOrder = orderRepository.findById(id);
         if(storedOrder.isPresent()){
             if(storedOrder.get().getStatus().equals(OrderStatus.PENDING)){
@@ -113,8 +112,7 @@ public class OrderController{
                             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                         }
                     }
-                    orderRepository.save(storedOrder.get());
-                    return ResponseEntity.status(HttpStatus.CREATED).build();
+                    return ResponseEntity.status(HttpStatus.OK).body(orderRepository.save(storedOrder.get()));
                 }
                 else{
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -129,7 +127,7 @@ public class OrderController{
 
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @PatchMapping("/by-id/{id}/new-item/{wareId}&{amount}")
-    public ResponseEntity<String> addItemToOrder(@PathVariable UUID id, @PathVariable UUID wareId, @PathVariable long amount){
+    public ResponseEntity<Order> addItemToOrder(@PathVariable UUID id, @PathVariable UUID wareId, @PathVariable long amount){
         Optional<Order> storedOrder = orderRepository.findById(id);
         if(storedOrder.isPresent()){
             if(storedOrder.get().getStatus().equals(OrderStatus.PENDING)){
@@ -141,8 +139,7 @@ public class OrderController{
                     item.setWare(ware.get());
                     item.setAmount(amount);
                     storedOrder.get().getItems().add(item);
-                    orderRepository.save(storedOrder.get());
-                    return ResponseEntity.status(HttpStatus.CREATED).build();
+                    return ResponseEntity.status(HttpStatus.OK).body(orderRepository.save(storedOrder.get()));
                 }
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
@@ -155,13 +152,12 @@ public class OrderController{
 
     @Secured({"ROLE_ADMIN"})
     @PatchMapping("/by-id/{id}/change-status/{status}")
-    public ResponseEntity<String> changeOrderStatus(@PathVariable UUID id, @PathVariable OrderStatus status){
+    public ResponseEntity<Order> changeOrderStatus(@PathVariable UUID id, @PathVariable OrderStatus status){
         Optional<Order> storedOrder = orderRepository.findById(id);
         if(storedOrder.isPresent()){
             if(!storedOrder.get().getItems().isEmpty()){
                 storedOrder.get().setStatus(status);
-                orderRepository.save(storedOrder.get());
-                return ResponseEntity.status(HttpStatus.OK).build();
+                return ResponseEntity.status(HttpStatus.OK).body(orderRepository.save(storedOrder.get()));
             }
             else{
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -197,7 +193,7 @@ public class OrderController{
 
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @DeleteMapping("by-id/{id}/delete-items")
-    public ResponseEntity<String> deleteItemsFromOrder(@PathVariable UUID id){
+    public ResponseEntity<Order> deleteItemsFromOrder(@PathVariable UUID id){
         Optional<Order> storedOrder = orderRepository.findById(id);
         if(storedOrder.isPresent()){
             if(storedOrder.get().getStatus().equals(OrderStatus.PENDING)){
@@ -207,8 +203,7 @@ public class OrderController{
                     ware.setStock(ware.getStock() + item.getAmount());
                 }
                 storedOrder.get().getItems().clear();
-                orderRepository.save(storedOrder.get());
-                return ResponseEntity.status(HttpStatus.OK).build();
+                return ResponseEntity.status(HttpStatus.OK).body(orderRepository.save(storedOrder.get()));
             }
             else{
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -219,7 +214,7 @@ public class OrderController{
 
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @DeleteMapping("by-id/{id}/delete-item/{itemId}")
-    public ResponseEntity<String> deleteItemFromOrder(@PathVariable UUID id, @PathVariable UUID itemId){
+    public ResponseEntity<Order> deleteItemFromOrder(@PathVariable UUID id, @PathVariable UUID itemId){
         Optional<Order> storedOrder = orderRepository.findById(id);
         if(storedOrder.isPresent()){
             if(storedOrder.get().getStatus().equals(OrderStatus.PENDING)){
@@ -231,8 +226,7 @@ public class OrderController{
                         it.remove();
                     }
                 }
-                orderRepository.save(storedOrder.get());
-                return ResponseEntity.status(HttpStatus.OK).build();
+                return ResponseEntity.status(HttpStatus.OK).body(orderRepository.save(storedOrder.get()));
             }
             else{
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

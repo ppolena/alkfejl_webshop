@@ -81,32 +81,30 @@ public class UserController{
 
     @Secured({"ROLE_ADMIN", "ROLE_GUEST"})
     @PostMapping
-    public ResponseEntity<String> addUser(@Valid @RequestBody User user){
+    public ResponseEntity<User> addUser(@Valid @RequestBody User user){
         if(userRepository.findByEmail(user.getEmail()).isPresent()){
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setAccessRight(AccessRight.ROLE_CUSTOMER);
-        userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(userRepository.save(user));
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @PutMapping("/by-id/{id}")
-    public ResponseEntity<String> changeUser(@PathVariable UUID id, @Valid @RequestBody User updatedUser){
+    public ResponseEntity<User> changeUser(@PathVariable UUID id, @Valid @RequestBody User updatedUser){
         Optional<User> storedUser = userRepository.findById(id);
         if(storedUser.isPresent()){
             updatedUser.setId(storedUser.get().getId());
             updatedUser.setAccessRight(storedUser.get().getAccessRight());
-            userRepository.save(updatedUser);
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.status(HttpStatus.OK).body(userRepository.save(updatedUser));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @PatchMapping("/by-id/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable UUID id, @Valid @RequestBody User updatedUser){
+    public ResponseEntity<User> updateUser(@PathVariable UUID id, @Valid @RequestBody User updatedUser){
         Optional<User> storedUser = userRepository.findById(id);
         if(storedUser.isPresent()){
             if(updatedUser.getFirstName() != null){
@@ -124,8 +122,7 @@ public class UserController{
             if(updatedUser.getAddress() != null){
                 storedUser.get().setAddress(updatedUser.getAddress());
             }
-            userRepository.save(storedUser.get());
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.status(HttpStatus.OK).body(userRepository.save(storedUser.get()));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }

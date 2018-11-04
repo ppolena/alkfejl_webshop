@@ -111,12 +111,11 @@ public class WareController{
 
     @Secured({"ROLE_ADMIN"})
     @PostMapping
-    public ResponseEntity<String> addWare(@Valid @RequestBody Ware ware){
+    public ResponseEntity<Ware> addWare(@Valid @RequestBody Ware ware){
         if(wareRepository.findByName(ware.getName()).isPresent()){
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
-        wareRepository.save(ware);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(wareRepository.save(ware));
     }
 
     @Secured({"ROLE_ADMIN"})
@@ -154,19 +153,18 @@ public class WareController{
 
     @Secured({"ROLE_ADMIN"})
     @PutMapping("/by-id/{id}")
-    public ResponseEntity<String> changeWare(@PathVariable UUID id, @Valid @RequestBody Ware updatedWare){
+    public ResponseEntity<Ware> changeWare(@PathVariable UUID id, @Valid @RequestBody Ware updatedWare){
         Optional<Ware> storedWare = wareRepository.findById(id);
         if(storedWare.isPresent()){
             updatedWare.setId(storedWare.get().getId());
-            wareRepository.save(updatedWare);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.OK).body(wareRepository.save(updatedWare));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @Secured({"ROLE_ADMIN"})
     @PatchMapping("/by-id/{id}")
-    public ResponseEntity<String> updateWare(@PathVariable UUID id, @Valid @RequestBody Ware updatedWare){
+    public ResponseEntity<Ware> updateWare(@PathVariable UUID id, @Valid @RequestBody Ware updatedWare){
         Optional<Ware> storedWare = wareRepository.findById(id);
         if(storedWare.isPresent()){
             if(updatedWare.getName() != null){
@@ -187,8 +185,7 @@ public class WareController{
             if(updatedWare.getDescription() != null){
                 storedWare.get().setDescription(updatedWare.getDescription());
             }
-            wareRepository.save(storedWare.get());
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.status(HttpStatus.OK).body(wareRepository.save(storedWare.get()));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
