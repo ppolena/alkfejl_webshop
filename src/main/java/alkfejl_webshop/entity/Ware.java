@@ -7,7 +7,6 @@ import lombok.ToString;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
@@ -30,7 +29,7 @@ public class Ware extends BaseEntity{
     @Column(nullable = false, length = 25)
     private String manufacturer;
 
-    @Positive
+    @PositiveOrZero
     @Column(nullable = false)
     private double price;
 

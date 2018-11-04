@@ -166,26 +166,26 @@ public class WareController{
 
     @Secured({"ROLE_ADMIN"})
     @PatchMapping("/by-id/{id}")
-    public ResponseEntity<String> updateWare(@PathVariable UUID id, @RequestBody Map<String, String> updatedWare){
+    public ResponseEntity<String> updateWare(@PathVariable UUID id, @Valid @RequestBody Ware updatedWare){
         Optional<Ware> storedWare = wareRepository.findById(id);
         if(storedWare.isPresent()){
-            if(updatedWare.get("name") != null){
-                storedWare.get().setName(updatedWare.get("name"));
+            if(updatedWare.getName() != null){
+                storedWare.get().setName(updatedWare.getName());
             }
-            if(updatedWare.get("type") != null){
-                storedWare.get().setType(updatedWare.get("type"));
+            if(updatedWare.getType() != null){
+                storedWare.get().setType(updatedWare.getType());
             }
-            if(updatedWare.get("manufacturer") != null){
-                storedWare.get().setManufacturer(updatedWare.get("manufacturer"));
+            if(updatedWare.getManufacturer() != null){
+                storedWare.get().setManufacturer(updatedWare.getManufacturer());
             }
-            if(NumberUtils.isParsable(updatedWare.get("price")) && Double.parseDouble(updatedWare.get("price")) > 0.0){
-                storedWare.get().setPrice(Double.parseDouble(updatedWare.get("price")));
+            if(updatedWare.getPrice() > 0){
+                storedWare.get().setPrice(updatedWare.getPrice());
             }
-            if(NumberUtils.isParsable(updatedWare.get("stock")) && Double.parseDouble(updatedWare.get("stock")) > storedWare.get().getStock()){
-                storedWare.get().setStock(Math.round(Double.parseDouble(updatedWare.get("stock"))));
+            if(updatedWare.getStock() > storedWare.get().getStock()){
+                storedWare.get().setStock(updatedWare.getStock());
             }
-            if(updatedWare.get("description") != null){
-                storedWare.get().setDescription(updatedWare.get("description"));
+            if(updatedWare.getDescription() != null){
+                storedWare.get().setDescription(updatedWare.getDescription());
             }
             wareRepository.save(storedWare.get());
             return ResponseEntity.status(HttpStatus.OK).build();
