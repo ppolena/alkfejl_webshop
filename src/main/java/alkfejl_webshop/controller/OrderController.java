@@ -5,6 +5,7 @@ import alkfejl_webshop.repository.OrderRepository;
 import alkfejl_webshop.repository.UserRepository;
 import alkfejl_webshop.repository.WareRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -126,22 +127,28 @@ public class OrderController{
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
-    @PatchMapping("/by-id/{id}/new-item/{wareId}&{amount}")
-    public ResponseEntity<Order> addItemToOrder(@PathVariable UUID id, @PathVariable UUID wareId, @PathVariable long amount){
+    @PatchMapping("/by-id/{id}/new-item")
+    public ResponseEntity<Order> addItemToOrder(@PathVariable UUID id, @RequestBody Map<String, String> item){
         Optional<Order> storedOrder = orderRepository.findById(id);
         if(storedOrder.isPresent()){
             if(storedOrder.get().getStatus().equals(OrderStatus.PENDING)){
-                Optional<Ware> ware = wareRepository.findById(wareId);
-                if(ware.isPresent() && ware.get().getStock() >= amount){
-                    ware.get().setStock(ware.get().getStock() - amount);
-                    wareRepository.save(ware.get());
-                    Item item = new Item();
-                    item.setWare(ware.get());
-                    item.setAmount(amount);
-                    storedOrder.get().getItems().add(item);
-                    return ResponseEntity.status(HttpStatus.OK).body(orderRepository.save(storedOrder.get()));
+                if(item.get("ware") != null && item.get("amount") != null && NumberUtils.isParsable(item.get("amount")) && Double.parseDouble(item.get("amount")) > 0.0){
+                    long amount = Math.round(Double.parseDouble(item.get("amount")));
+                    Optional<Ware> ware = wareRepository.findById(UUID.fromString(item.get("ware")));
+                    if(ware.isPresent() && ware.get().getStock() >= amount){
+                        ware.get().setStock(ware.get().getStock() - amount);
+                        wareRepository.save(ware.get());
+                        Item newItem = new Item();
+                        newItem.setWare(ware.get());
+                        newItem.setAmount(amount);
+                        storedOrder.get().getItems().add(newItem);
+                        return ResponseEntity.status(HttpStatus.OK).body(orderRepository.save(storedOrder.get()));
+                    }
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                 }
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                else{
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                }
             }
             else{
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -151,13 +158,18 @@ public class OrderController{
     }
 
     @Secured({"ROLE_ADMIN"})
-    @PatchMapping("/by-id/{id}/change-status/{status}")
-    public ResponseEntity<Order> changeOrderStatus(@PathVariable UUID id, @PathVariable OrderStatus status){
+    @PatchMapping("/by-id/{id}/change-status")
+    public ResponseEntity<Order> changeOrderStatus(@PathVariable UUID id, @RequestBody Map<String, String> status){
         Optional<Order> storedOrder = orderRepository.findById(id);
         if(storedOrder.isPresent()){
             if(!storedOrder.get().getItems().isEmpty()){
-                storedOrder.get().setStatus(status);
-                return ResponseEntity.status(HttpStatus.OK).body(orderRepository.save(storedOrder.get()));
+                if(status.get("status") != null){
+                    storedOrder.get().setStatus(OrderStatus.valueOf(status.get("status")));
+                    return ResponseEntity.status(HttpStatus.OK).body(orderRepository.save(storedOrder.get()));
+                }
+                else{
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                }
             }
             else{
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
