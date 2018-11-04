@@ -179,7 +179,7 @@ public class OrderController{
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
-    @DeleteMapping("by-id/{id}")
+    @DeleteMapping("/by-id/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable UUID id){
         Optional<Order> storedOrder = orderRepository.findById(id);
         if(storedOrder.isPresent()){
@@ -204,7 +204,7 @@ public class OrderController{
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
-    @DeleteMapping("by-id/{id}/delete-items")
+    @DeleteMapping("/by-id/{id}/delete-items")
     public ResponseEntity<Order> deleteItemsFromOrder(@PathVariable UUID id){
         Optional<Order> storedOrder = orderRepository.findById(id);
         if(storedOrder.isPresent()){
@@ -225,7 +225,7 @@ public class OrderController{
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
-    @DeleteMapping("by-id/{id}/delete-item/{itemId}")
+    @DeleteMapping("/by-id/{id}/delete-item/{itemId}")
     public ResponseEntity<Order> deleteItemFromOrder(@PathVariable UUID id, @PathVariable UUID itemId){
         Optional<Order> storedOrder = orderRepository.findById(id);
         if(storedOrder.isPresent()){
