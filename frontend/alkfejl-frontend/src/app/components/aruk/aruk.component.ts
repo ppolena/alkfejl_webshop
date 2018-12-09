@@ -34,6 +34,8 @@ export class ArukComponent implements OnInit {
 
   private mire: string = "";
   private mi: string = "";
+  private rendez: string = "nev";
+  private wares: Ware[] = [];
 
 
   addMire(s:string) {
@@ -45,10 +47,44 @@ export class ArukComponent implements OnInit {
 
 
 
+
+  shortWares(sortType: string)
+  {
+    var shortedWares: Ware[] = [];
+    if(sortType == "nev") {  
+          shortedWares = this.wares.sort((n1,n2) =>{
+            if (n1.name > n2.name) {
+                return 1;
+            }
+            if (n1.name < n2.name) {
+                return -1;
+            }
+            return 0;
+        });
+    }
+    if(sortType == "ar") {  
+          shortedWares = this.wares.sort((n1,n2) =>{
+            if (n1.price > n2.price) {
+                return 1;
+            }
+            if (n1.price < n2.price) {
+                return -1;
+            }
+            return 0;
+        });
+    }
+	  return shortedWares;
+  }
+
+
+
+
   private sajt2()
   {
   console.log(this.waresService.getWares());
-  return this.waresService.getWares();
+  this.wares = this.waresService.getWares();
+  this.wares = this.shortWares(this.rendez);
+  return this.wares;
   }
 
   ngOnInit() {
@@ -58,9 +94,10 @@ export class ArukComponent implements OnInit {
 
   filter(filterMire: string,filterMi: string) {
     console.log(this.waresService.getFilteredWares(filterMire,filterMi));
-    return this.waresService.getFilteredWares(filterMire,filterMi);
+    this.wares = this.waresService.getFilteredWares(filterMire,filterMi);
+    this.wares = this.shortWares(this.rendez);
+    return this.wares;
   }
-
 
 
 }

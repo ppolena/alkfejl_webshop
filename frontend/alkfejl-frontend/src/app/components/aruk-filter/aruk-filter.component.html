@@ -2,7 +2,7 @@
 <p>Szűrés: 
 
 <mat-form-field>
-    <select matNativeControl  [(ngModel)]="mire" name="car">
+    <select matNativeControl  [(ngModel)]="mire">
       <option value="" disabled selected></option>
       <option *ngFor="let akt of selectables" [value]="akt.value">
         {{akt.viewValue}}
