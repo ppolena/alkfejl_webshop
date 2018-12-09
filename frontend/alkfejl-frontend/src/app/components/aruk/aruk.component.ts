@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { WaresService } from '../../wares.service';
 import { Ware } from '../../model/Ware';
+import { Order } from '../../model/Order';
+import { AuthService } from '../../auth.service';
 
 @Component({
   selector: 'app-aruk',
@@ -29,7 +31,8 @@ export class ArukComponent implements OnInit {
   ];
 
   constructor(
-    private waresService: WaresService
+    private waresService: WaresService,
+    private authService: AuthService
   ) { }
 
   private mire: string = "";
@@ -89,6 +92,9 @@ export class ArukComponent implements OnInit {
 
   ngOnInit() {
 	  this.waresService.reqWares();
+  }
+
+  kosarba(ware:Ware, amount:number) {
   }
 
 

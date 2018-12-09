@@ -1,3 +1,17 @@
 <p>
   chart works!
 </p>
+
+
+<table>
+  <thead>
+    <th>Áru</th>
+    <th>Darab</th>
+  </thead>
+  <tbody>
+      <tr *ngFor = "let asd of chart">
+          <td>{{asd.ware.name}}</td>
+          <td>{{asd.amount}}</td>
+      </tr>
+  </tbody>
+</table>

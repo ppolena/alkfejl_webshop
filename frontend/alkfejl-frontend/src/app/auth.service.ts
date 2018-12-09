@@ -73,6 +73,11 @@ export class AuthService {
   {
 	  return httpOptions;
   }
+
+  getUser()
+  {
+	  return this.user;
+  }
   
   logout() {
     this.token = btoa(`guest:`);

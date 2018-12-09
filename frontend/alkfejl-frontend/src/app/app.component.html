@@ -9,11 +9,11 @@
   <div *ngIf="!authService.isLoggedIn">
     <button mat-button routerLink="/login">Belépés</button>
   </div>
-  <div *ngIf="!authService.isLoggedIn">
-    <button mat-button routerLink="/reg">Regisztráció</button>
+  <div *ngIf="authService.isLoggedIn">
+    <button mat-button routerLink="/reg">Adatmódosítás</button>
   </div>
 </mat-toolbar>
 
-<p>Sablon vége</p>
+<p>*</p>
 
 <router-outlet></router-outlet>

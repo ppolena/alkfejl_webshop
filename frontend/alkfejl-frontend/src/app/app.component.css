@@ -1,7 +1,12 @@
 p{
-    background-color: powderblue;
+    background-color: rgb(135, 123, 240);
     
     text-align: center;
     margin-right: 5%;
     margin-left: 5%;
+}
+mat-toolbar{
+    margin-right: 5%;
+    margin-left: 5%;
+    margin-top: 5%;
 }

@@ -1,6 +1,3 @@
-<p>
-  aruk works!
-</p>
 
   <div>
       <app-aruk-filter
@@ -12,8 +9,8 @@
   </div>
 
 <p>
-    Rendez:
-<mat-form-field>
+    Rendezés:
+<mat-form-field  class = "szuro">
     <select matNativeControl  [(ngModel)]="rendez" >
       <option [value]="'nev'">  név szerint </option>
       <option [value]="'ar'">  Ár szerint </option>
@@ -28,14 +25,22 @@
     <th>Gyártó</th>
     <th>Ár</th>
     <th>Készleten</th>
+    <th > kosárba </th>
   </thead>
   <tbody>
-      <tr *ngFor = "let asd of filter(mire,mi)">
+      <tr *ngFor = "let asd of warExample">
+      <!--filter(mire,mi)"-->
           <td>{{asd.name}}</td>
           <td>{{asd.type}}</td>
           <td> {{asd.manufacturer}}</td>
           <td>{{asd.price}}</td>
           <td>{{asd.stock}}</td>
+          <td>        
+              <button  
+              mat-button
+              (click)="kosarba(asd,1)"
+              >Kosárba!</button>
+          </td>
       </tr>
   </tbody>
 </table>

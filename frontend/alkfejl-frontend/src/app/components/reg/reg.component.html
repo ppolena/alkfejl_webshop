@@ -1,4 +1,4 @@
-
+<div *ngIf="!authService.isLoggedIn">
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
     <div *ngIf="message">
@@ -25,8 +25,42 @@
       <mat-error *ngIf="password.invalid">Kötelező elem</mat-error>
     </mat-form-field>
   
-    <div>
+    <div class="button">
       <button mat-flat-button type="submit" color="primary" [disabled]="form.invalid">Regisztráció</button>
     </div>
   </form>
+  </div>
   
+<div  *ngIf="authService.isLoggedIn">
+<form [formGroup]="form" (ngSubmit)="onUpdate()">
+
+  <div *ngIf="message">
+      {{ message }}
+    </div>
+
+  <mat-form-field>
+    <input matInput placeholder="firstName" formControlName="firstName" required>
+    <mat-error *ngIf="firstName.invalid">Kötelező elem</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput placeholder="lastName" formControlName="lastName" required>
+    <mat-error *ngIf="lastName.invalid">Kötelező elem</mat-error> 
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput placeholder="mail" formControlName="mail" required>
+    <mat-error *ngIf="mail.invalid">Kötelező elem</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput placeholder="password" formControlName="password" required>
+    <mat-error *ngIf="password.invalid">Kötelező elem</mat-error>
+  </mat-form-field>
+
+  <div class="button">
+    <button mat-flat-button type="submit" color="primary" [disabled]="form.invalid">Adatmódosítás</button>
+  </div>
+</form>
+</div>
+

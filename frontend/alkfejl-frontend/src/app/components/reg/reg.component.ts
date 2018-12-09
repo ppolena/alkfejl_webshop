@@ -3,6 +3,8 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth.service';
 import { addAllToArray } from '@angular/core/src/render3/util';
+import { User } from 'src/app/model/User';
+import { AttributeMarker } from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-reg',
@@ -10,6 +12,9 @@ import { addAllToArray } from '@angular/core/src/render3/util';
   styleUrls: ['./reg.component.css']
 })
 export class RegComponent implements OnInit {
+
+
+
 
   constructor(
     private fb: FormBuilder,
@@ -41,6 +46,20 @@ export class RegComponent implements OnInit {
         this.router.navigate([this.authService.redirectUrl]);
       } else {
         this.router.navigate(['/']);
+      }
+    }
+    catch(e) {
+      this.message = 'FUCK!'
+    }  
+  }
+
+  async onUpdate() {
+    try {
+      await this.authService.update(this.firstName.value, this.lastName.value, this.mail.value, this.password.value);
+      if (this.authService.redirectUrl) {
+        this.router.navigate([this.authService.redirectUrl]);
+      } else {
+        this.message = 'Sikeres adatmódosítás!'
       }
     }
     catch(e) {
