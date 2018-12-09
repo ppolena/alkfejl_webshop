@@ -1,0 +1,19 @@
+
+<mat-toolbar color="primary">
+  <button mat-button routerLink="/index"> Webshop</button>
+  <button mat-button routerLink="/aruk">Aruk listázása</button>
+  <div *ngIf="authService.isLoggedIn">
+    <button mat-button routerLink="/chart">Kosár listázása</button>
+    <button mat-button (click)="logout()">Logout</button>
+  </div>
+  <div *ngIf="!authService.isLoggedIn">
+    <button mat-button routerLink="/login">Login</button>
+  </div>
+  <div *ngIf="!authService.isLoggedIn">
+    <button mat-button routerLink="/reg">Regisztráció</button>
+  </div>
+</mat-toolbar>
+
+<p>Sablon vége</p>
+
+<router-outlet></router-outlet>
