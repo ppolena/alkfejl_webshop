@@ -56,6 +56,19 @@ export class AuthService {
     }
   }
 
+  async update(FN: string, LN: string, mail: string, password: string){
+    try {
+      const newUser = await this.http.put<User>(`${this.authUrl}/by-id/${this.user.id}`,
+      JSON.stringify({firstName:FN, lastName:LN, email:mail, password:password, accessRight:"ROLE_CUSTOMER"}),
+      httpOptions).toPromise();
+      console.log(newUser);
+    }
+    catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+
   getOptions()
   {
 	  return httpOptions;
