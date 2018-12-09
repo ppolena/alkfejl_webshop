@@ -7,7 +7,7 @@
     <button mat-button (click)="logout()">Logout</button>
   </div>
   <div *ngIf="!authService.isLoggedIn">
-    <button mat-button routerLink="/login">Login</button>
+    <button mat-button routerLink="/login">Belépés</button>
   </div>
   <div *ngIf="!authService.isLoggedIn">
     <button mat-button routerLink="/reg">Regisztráció</button>

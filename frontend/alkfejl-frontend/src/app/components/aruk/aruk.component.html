@@ -2,12 +2,40 @@
   aruk works!
 </p>
 
-<ul> 
-  <li>Áru Gyártó Ár Készleten</li>  
-  <li *ngFor = "let asd of sajt2()">{{asd.name}} {{asd.manufacturer}} {{asd.price}} {{asd.stock}}</li>  
-</ul>
+<div>
+    <app-aruk-filter
+    (filterSubmit)="addMire($event)"
+    (filterSubmit2)="addMi($event)"
+    [selectName]="'Szűrés'"
+    [filterName]="'Érték'"
+    ></app-aruk-filter>
+</div>
 
+<p>
+    {{mire}} {{mi}}
+</p>
 
- <div *ngIf = "false">
-   sunsunsnu
- </div> 
+<table>
+  <thead>
+    <th>Áru</th>
+    <th>Gyártó</th>
+    <th>Ár</th>
+    <th>Készleten</th>
+  </thead>
+  <tbody *ngIf = "mire == ''">
+      <tr *ngFor = "let asd of sajt2()">
+          <td>{{asd.name}}</td>
+          <td> {{asd.manufacturer}}</td>
+          <td>{{asd.price}}</td>
+          <td>{{asd.stock}}</td>
+      </tr>
+  </tbody>
+  <tbody *ngIf = "mire != ''">
+      <tr *ngFor = "let asd of filter(mire,mi)">
+          <td>{{asd.name}}</td>
+          <td> {{asd.manufacturer}}</td>
+          <td>{{asd.price}}</td>
+          <td>{{asd.stock}}</td>
+      </tr>
+  </tbody>
+</table>

@@ -17,6 +17,43 @@ export class WaresService {
   {
 	  return this.wares;
   }
+
+
+  getFilteredWares(filterWhat: string, filterWalue: string)
+  {
+    const filteredWares: Ware[] = [];
+    if(filterWhat == "") {  
+      return this.wares;
+    }
+    if(filterWhat == "type") {  
+      for (let item of this.wares) {
+        if (item.type.startsWith(filterWalue)) {
+  
+          filteredWares.push(item);
+  
+        }
+      }
+    }
+    if(filterWhat == "price") {  
+      for (let item of this.wares) {
+        if (Number(item.price)<=Number(filterWalue)) {
+  
+          filteredWares.push(item);
+  
+        }
+      }
+    }
+    if(filterWhat == "manufacturer") {  
+      for (let item of this.wares) {
+        if (item.manufacturer.startsWith(filterWalue)) {
+  
+          filteredWares.push(item);
+  
+        }
+      }
+    }
+	  return filteredWares;
+  }
   
   reqWares()
   {

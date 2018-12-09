@@ -45,10 +45,10 @@ export class AuthService {
 
   async reg(FN: string, LN: string, mail: string, password: string){
     try {
-      const kurva = await this.http.post<User>(`${this.authUrl}`,
+      const newUser = await this.http.post<User>(`${this.authUrl}`,
       JSON.stringify({firstName:FN, lastName:LN, email:mail, password:password, accessRight:"ROLE_CUSTOMER"}),
       httpOptions).toPromise();
-      console.log(kurva);
+      console.log(newUser);
     }
     catch (e) {
       console.log(e);

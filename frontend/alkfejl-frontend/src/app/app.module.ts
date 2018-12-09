@@ -18,6 +18,7 @@ import { LoginComponent } from './login/login.component';
 // Materialize cuccos
 import { MaterializeModule } from 'ngx-materialize';
 import { RegComponent } from './components/reg/reg.component';
+import { ArukFilterComponent } from './components/aruk-filter/aruk-filter.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,6 +27,7 @@ import { RegComponent } from './components/reg/reg.component';
     IndexComponent,
     LoginComponent,
     RegComponent,
+    ArukFilterComponent,
   ],
   imports: [
     BrowserModule,
